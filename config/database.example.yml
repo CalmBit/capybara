@@ -1,0 +1,23 @@
+development:
+  dialect: "postgres"
+  database: "your_db_development"
+  host: "localhost"
+  port: "5432"
+  user: "postgres"
+  password: "postgres"
+
+test:
+  dialect: "mysql"
+  database: "your_db_test"
+  host: "localhost"
+  port: "3306"
+  user: "root"
+  password: "root"
+
+staging:
+  dialect: "sqlite3"
+  database: "./staging.sqlite"
+
+production:
+  dialect: "postgres"
+  url: {{ env "DATABASE_URL" }}

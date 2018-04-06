@@ -1,0 +1,7 @@
+drop_foreign_key("accounts", "accounts_accounts_id_fk", {})
+
+drop_index("accounts", "index_accounts_on_uri")
+drop_index("accounts", "index_accounts_on_url")
+drop_index("accounts", "index_accounts_on_username_and_domain")
+
+drop_table("accounts")
