@@ -1,4 +1,4 @@
-<img src="./capybara.png" width="128px" style="float:right;border-radius:10%">
+<img src="./capybara.png" width="128px" height="128px" align="right">
 
 # Capybara
 Capybara is a [Mastodon](https://github.com/tootsuite/mastodon) clone - it will function practically indentically to
