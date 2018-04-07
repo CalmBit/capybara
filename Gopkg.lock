@@ -346,6 +346,8 @@
   packages = [
     "acme",
     "acme/autocert",
+    "bcrypt",
+    "blowfish",
     "ssh/terminal"
   ]
   revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
@@ -399,6 +401,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bbbd9d5133ac420c5e72b78a3e84fabf6ea433307ab54a73b3dea484572f9f1c"
+  inputs-digest = "b7d77e34fe15b05f9bcc5fc70f0a0c650f705c6440e7018f3b327de6d2d9ca1f"
   solver-name = "gps-cdcl"
   solver-version = 1

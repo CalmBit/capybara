@@ -1,27 +1,27 @@
 package serializers
 
 import (
-	"fmt"
 	"bytes"
+	"fmt"
 	"reflect"
-	"time"
 	"strings"
+	"time"
 )
 
 const (
-	SerializerField   = iota
+	SerializerField = iota
 	SerializerMethod
 )
 
 type serializerField struct {
-	Name string
-	Type int
-	JSONKey string
+	Name     string
+	Type     int
+	JSONKey  string
 	AsString bool
 }
 
 type Serializer struct {
-	fields []serializerField
+	fields    []serializerField
 	validator ValidatorPredicate
 }
 
@@ -29,7 +29,7 @@ type ValidatorPredicate func(interface{}) error
 
 // Stub function - other logic at some point
 func ConstructSerializer(validator ValidatorPredicate) Serializer {
-	return Serializer{fields:[]serializerField{}, validator:validator}
+	return Serializer{fields: []serializerField{}, validator: validator}
 }
 
 func (s Serializer) AddField(name string) Serializer {
@@ -42,7 +42,7 @@ func (s Serializer) AddFieldAsString(name string) Serializer {
 }
 
 func (s Serializer) AddMethod(name string, jsonKey string) Serializer {
-	s.fields = append(s.fields, serializerField{name, SerializerMethod,jsonKey, false})
+	s.fields = append(s.fields, serializerField{name, SerializerMethod, jsonKey, false})
 	return s
 }
 
@@ -53,7 +53,7 @@ func stringifyValue(value reflect.Value, asString bool) string {
 	switch value.Type().Name() {
 	case "string":
 		return fmt.Sprintf("\"%s\"", strings.Replace(value.String(), "\"", "\\\"", -1))
-	case "int32":
+	case "int":
 		fallthrough
 	case "int64":
 		if asString {
@@ -82,7 +82,7 @@ func stringifyTime(v reflect.Value) string {
 
 	// Time is a little weird - since it's a struct, we have to do this nasty, nasty extra method
 	// call on our value. On the bright side, it's fairly easy to set up and execute.
-	return v.MethodByName("Format", ).Call([]reflect.Value{reflect.ValueOf(time.RFC3339)})[0].String()
+	return v.MethodByName("Format").Call([]reflect.Value{reflect.ValueOf(time.RFC3339)})[0].String()
 }
 
 func (s Serializer) SerializeToJSON(v interface{}) ([]byte, error) {
@@ -135,7 +135,7 @@ func (s Serializer) SerializeToJSON(v interface{}) ([]byte, error) {
 
 		}
 		// If we haven't hit the last field yet, add a comma.
-		if i < len(s.fields) - 1 {
+		if i < len(s.fields)-1 {
 			buffer.WriteString(", ")
 		}
 	}

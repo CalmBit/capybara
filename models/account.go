@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"time"
 
+	"fmt"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"fmt"
+	"database/sql/driver"
 )
+
+type AccountId struct {
+	id int64
+}
 
 type Account struct {
 	ID                    int64     `json:"id" db:"id"`
@@ -28,11 +33,11 @@ type Account struct {
 	URL                   string    `json:"url" db:"url"`
 	AvatarFileName        string    `json:"avatar_file_name" db:"avatar_file_name"`
 	AvatarContentType     string    `json:"avatar_content_type" db:"avatar_content_type"`
-	AvatarFileSize        int32     `json:"avatar_file_size" db:"avatar_file_size"`
+	AvatarFileSize        int     `json:"avatar_file_size" db:"avatar_file_size"`
 	AvatarUpdatedAt       time.Time `json:"avatar_updated_at" db:"avatar_updated_at"`
 	HeaderFileName        string    `json:"header_file_name" db:"header_file_name"`
 	HeaderContentType     string    `json:"header_content_type" db:"header_content_type"`
-	HeaderFileSize        int32     `json:"header_file_size" db:"header_file_size"`
+	HeaderFileSize        int     `json:"header_file_size" db:"header_file_size"`
 	HeaderUpdatedAt       time.Time `json:"header_updated_at" db:"header_updated_at"`
 	AvatarRemoteURL       string    `json:"avatar_remote_url" db:"avatar_remote_url"`
 	SubscriptionExpiresAt time.Time `json:"subscription_expires_at" db:"subscription_expires_at"`
@@ -40,17 +45,17 @@ type Account struct {
 	Suspended             bool      `json:"suspended" db:"suspended"`
 	Locked                bool      `json:"locked" db:"locked"`
 	HeaderRemoteURL       string    `json:"header_remote_url" db:"header_remote_url"`
-	StatusesCount         int32     `json:"statuses_count" db:"statuses_count"`
-	FollowersCount        int32     `json:"followers_count" db:"followers_count"`
-	FollowingCount        int32     `json:"following_count" db:"following_count"`
+	StatusesCount         int     `json:"statuses_count" db:"statuses_count"`
+	FollowersCount        int     `json:"followers_count" db:"followers_count"`
+	FollowingCount        int     `json:"following_count" db:"following_count"`
 	LastWebfingeredAt     time.Time `json:"last_webfingered_at" db:"last_webfingered_at"`
 	InboxURL              string    `json:"inbox_url" db:"inbox_url"`
 	OutboxURL             string    `json:"outbox_url" db:"outbox_url"`
 	SharedInboxURL        string    `json:"shared_inbox_url" db:"shared_inbox_url"`
 	FollowersURL          string    `json:"followers_url" db:"followers_url"`
-	Protocol              int32     `json:"protocol" db:"protocol"`
+	Protocol              int     `json:"protocol" db:"protocol"`
 	Memorial              bool      `json:"memorial" db:"memorial"`
-	MovedToAccountID      int64     `json:"moved_to_account_id" db:"moved_to_account_id"`
+	MovedToAccountID      AccountId     `json:"moved_to_account_id" db:"moved_to_account_id"`
 	FeaturedCollectionURL string    `json:"featured_collection_url" db:"featured_collection_url"`
 }
 
@@ -74,7 +79,7 @@ func (a Accounts) String() string {
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
-		&validators.StringIsPresent{Field: a.Domain, Name: "Domain"},
+		/*&validators.StringIsPresent{Field: a.Domain, Name: "Domain"},
 		&validators.StringIsPresent{Field: a.Secret, Name: "Secret"},
 		&validators.StringIsPresent{Field: a.PrivateKey, Name: "PrivateKey"},
 		&validators.StringIsPresent{Field: a.PublicKey, Name: "PublicKey"},
@@ -89,19 +94,15 @@ func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: a.URL, Name: "URL"},
 		&validators.StringIsPresent{Field: a.AvatarFileName, Name: "AvatarFileName"},
 		&validators.StringIsPresent{Field: a.AvatarContentType, Name: "AvatarContentType"},
-		&validators.TimeIsPresent{Field: a.AvatarUpdatedAt, Name: "AvatarUpdatedAt"},
 		&validators.StringIsPresent{Field: a.HeaderFileName, Name: "HeaderFileName"},
 		&validators.StringIsPresent{Field: a.HeaderContentType, Name: "HeaderContentType"},
-		&validators.TimeIsPresent{Field: a.HeaderUpdatedAt, Name: "HeaderUpdatedAt"},
 		&validators.StringIsPresent{Field: a.AvatarRemoteURL, Name: "AvatarRemoteURL"},
-		&validators.TimeIsPresent{Field: a.SubscriptionExpiresAt, Name: "SubscriptionExpiresAt"},
 		&validators.StringIsPresent{Field: a.HeaderRemoteURL, Name: "HeaderRemoteURL"},
-		&validators.TimeIsPresent{Field: a.LastWebfingeredAt, Name: "LastWebfingeredAt"},
 		&validators.StringIsPresent{Field: a.InboxURL, Name: "InboxURL"},
 		&validators.StringIsPresent{Field: a.OutboxURL, Name: "OutboxURL"},
 		&validators.StringIsPresent{Field: a.SharedInboxURL, Name: "SharedInboxURL"},
 		&validators.StringIsPresent{Field: a.FollowersURL, Name: "FollowersURL"},
-		&validators.StringIsPresent{Field: a.FeaturedCollectionURL, Name: "FeaturedCollectionURL"},
+		&validators.StringIsPresent{Field: a.FeaturedCollectionURL, Name: "FeaturedCollectionURL"},*/
 	), nil
 }
 
@@ -133,7 +134,7 @@ func (a Account) Avatar() string {
 	return "avatar_placeholder"
 }
 
-func (a Account ) AvatarStatic() string {
+func (a Account) AvatarStatic() string {
 	return "static_avatar_placeholder"
 }
 
@@ -141,6 +142,23 @@ func (a Account) Header() string {
 	return "header_placeholder"
 }
 
-func (a Account ) HeaderStatic() string {
+func (a Account) HeaderStatic() string {
 	return "header_avatar_placeholder"
+}
+
+func (id AccountId) Value() (driver.Value, error) {
+	if id.id == 0 {
+		return nil, nil
+	}
+	return driver.Value(id), nil
+}
+
+func (id AccountId) Scan(src interface{}) error {
+	if src == nil {
+		id.id = 0
+	} else {
+		id.id = src.(int64)
+	}
+
+	return nil
 }
