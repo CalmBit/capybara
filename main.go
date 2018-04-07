@@ -4,7 +4,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+	"github.com/x-cray/logrus-prefixed-formatter"
 
 	"github.com/CalmBit/capybara/controllers"
 	"github.com/gobuffalo/pop"
@@ -33,6 +33,7 @@ func main() {
 	app := iris.New()
 	mvc.Configure(app.Party("/api/v1/accounts"), accounts)
 	log.Infof("Listening on 8080...")
+
 	app.Run(iris.Addr(":8080"), iris.WithoutStartupLog, iris.WithoutServerError(iris.ErrServerClosed))
 	log.Infof("Goodbye! :)")
 }

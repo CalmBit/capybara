@@ -1,3 +1,5 @@
 config/database.yml
 vendor/
 migrations/schema.sql
+bin/
+.idea/

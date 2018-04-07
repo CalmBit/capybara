@@ -7,6 +7,7 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
+	"fmt"
 )
 
 type Account struct {
@@ -114,4 +115,32 @@ func (a *Account) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (a *Account) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+func (a Account) Local() bool {
+	return a.Domain == ""
+}
+
+func (a Account) Acct() string {
+	if a.Local() {
+		return a.Username
+	} else {
+		return fmt.Sprintf("%s@%s", a.Username, a.Domain)
+	}
+}
+
+func (a Account) Avatar() string {
+	return "avatar_placeholder"
+}
+
+func (a Account ) AvatarStatic() string {
+	return "static_avatar_placeholder"
+}
+
+func (a Account) Header() string {
+	return "header_placeholder"
+}
+
+func (a Account ) HeaderStatic() string {
+	return "header_avatar_placeholder"
 }
