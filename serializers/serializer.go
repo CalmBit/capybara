@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"reflect"
 	"time"
+	"strings"
 )
 
 const (
@@ -51,7 +52,7 @@ func stringifyValue(value reflect.Value, asString bool) string {
 	// can debug it later.
 	switch value.Type().Name() {
 	case "string":
-		return fmt.Sprintf("\"%s\"", value.String())
+		return fmt.Sprintf("\"%s\"", strings.Replace(value.String(), "\"", "\\\"", -1))
 	case "int32":
 		fallthrough
 	case "int64":

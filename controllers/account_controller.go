@@ -45,7 +45,7 @@ var sampleAccount = models.Account{
 	RemoteURL:             "remote url thing",
 	SalmonURL:             "salmon url thing",
 	HubURL:                "hub url thing",
-	Note:                  "Notes. I like notes!",
+	Note:                  "\u00A7\"hello world\"",
 	DisplayName:           "CalmBit",
 	URI:                   "test.notlocal/CalmBit",
 	URL:                   "test.notlocal/CalmBit",
