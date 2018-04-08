@@ -9,6 +9,7 @@ import (
 	"net"
 	"database/sql/driver"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 )
 
 type UserIP net.IPAddr
@@ -224,17 +225,17 @@ func (u *User) CreateAccount(tx *pop.Connection, username string) error {
 }
 
 func (ip UserIP) Value() (driver.Value, error) {
+	if len(ip.IP) == 0 {
+		log.Warningf("clobbered nil ip value on user object - LOOK INTO THIS")
+		return driver.Value("0.0.0.0"), nil
+	}
 	return driver.Value(ip.IP.String()), nil
 }
 
 func (ip UserIP) Scan(src interface{}) error {
-	var source []byte
-	switch src.(type) {
-	case string:
-		source = []byte(src.(string))
-	case []byte:
-		source = src.([]byte)
-	}
+	var source []uint8
+	source = []byte(src.([]uint8))
+
 	ip.IP = net.ParseIP(string(source))
 
 	return nil

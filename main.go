@@ -10,58 +10,63 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
+	"github.com/kataras/iris/sessions/sessiondb/redis"
+	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 )
 
 const capybaraVersionString = "v0.1.0"
 
-// Temporary, offload somewhere else, config file?
-type Settings struct {
-	RegistrationsOpen bool `yaml:"registrationsOpen"`
-}
-
 func main() {
-	var settings Settings
-	setbuff, err := ioutil.ReadFile("config/config.yml")
-	if err != nil {
-		log.Fatalf("unable to read config file - %s", err.Error())
-		return
-	}
-	err = yaml.Unmarshal(setbuff, &settings)
-	if err != nil {
-		log.Fatalf("unable to unmarshal config file - %s", err.Error())
-		return
-	}
+
 	log.SetOutput(os.Stderr)
 	textFormatter := new(prefixed.TextFormatter)
 	textFormatter.FullTimestamp = true
 	textFormatter.TimestampFormat = "Jan 01 2006 15:04:05"
 	log.SetFormatter(textFormatter)
 	log.SetLevel(log.DebugLevel)
-
+	controllers.LoadSettings()
 	log.Infof("Capybara %s is starting up...", capybaraVersionString)
 	log.Debugf("Establishing connection to database...")
 	tx, err := pop.Connect("development")
-	defer tx.Close()
 	if err != nil {
 		log.Fatalf("Unable to establish database connection: %s", err.Error())
 		return
 	}
 	log.Debugf("Got database connection %s", tx.ID)
+	log.Debugf("Establishing connection to redis...")
+	cache := redis.New(service.Config{
+		Network:     service.DefaultRedisNetwork,
+		Addr:        service.DefaultRedisAddr,
+		Password:    "",
+		Database:    "",
+		MaxIdle:     0,
+		MaxActive:   0,
+		IdleTimeout: service.DefaultRedisIdleTimeout,
+		Prefix:      "",
+	})
+	iris.RegisterOnInterrupt(func() {
+		cache.Close()
+		tx.Close()
+	})
+
 	log.Debugf("Starting up Iris....")
 	app := iris.New()
 	app.StaticWeb("/public/", "./public")
 	pugEngine := iris.Pug("./views", ".pug")
 	pugEngine.Reload(true)
 	app.RegisterView(pugEngine)
-
+	controllers.Session.UseDatabase(cache)
 	app.Get("/", func(ctx iris.Context) {
-		ctx.ViewData("settings", settings)
-		ctx.View("index.pug")
+		s := controllers.Session.Start(ctx)
+		if s.Get("user_id") == nil {
+			ctx.Redirect("/about")
+		}
 	})
 	mvc.Configure(app.Party("/api/v1/accounts"), accounts)
 	mvc.Configure(app.Party("/register"), registrations)
+	mvc.Configure(app.Party("/login"), logins)
+	mvc.Configure(app.Party("/about"), about)
+	mvc.Configure(app.Party("/otp"), otp)
 	log.Infof("Listening on 8080...")
 
 
@@ -75,4 +80,16 @@ func accounts(app *mvc.Application) {
 
 func registrations(app *mvc.Application) {
 	app.Handle(new(controllers.RegistrationController))
+}
+
+func logins(app *mvc.Application) {
+	app.Handle(new(controllers.LoginController))
+}
+
+func about(app *mvc.Application) {
+	app.Handle(new(controllers.AboutController))
+}
+
+func otp(app *mvc.Application) {
+	app.Handle(new(controllers.OTPController))
 }

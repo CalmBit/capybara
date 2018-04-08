@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        title Capybara
+    body
+        script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
+        link(rel="stylesheet" type="text/css" href="/public/css/style.css")
+        main#app
+            if .error
+                div#error_box
+                    p #{.error}
+            section#login
+                h2 Type in your 2FA code
+                form(action="/login/confirm" method="post")
+                    input(type="text" name="code_confirm" placeholder="Confirmation Code")
+                    button(type="submit") Confirm

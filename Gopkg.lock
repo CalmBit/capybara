@@ -58,6 +58,15 @@
   revision = "97eac295f74b5fbb7fd3113e35f4ccf3c816e389"
 
 [[projects]]
+  name = "github.com/garyburd/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
+
+[[projects]]
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   revision = "a0583e0143b1624142adab07e0e97fe106d99561"
@@ -179,6 +188,8 @@
     "middleware/recover",
     "mvc",
     "sessions",
+    "sessions/sessiondb/redis",
+    "sessions/sessiondb/redis/service",
     "view"
   ]
   revision = "41b17aca9ec493f6eedf17c0e5545cf134f2d445"
@@ -318,6 +329,43 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/sec51/convert"
+  packages = [
+    ".",
+    "bigendian",
+    "smallendian"
+  ]
+  revision = "8ed1f399b5e0a9a9620c74cfd5aec3682d8328ab"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/sec51/cryptoengine"
+  packages = ["."]
+  revision = "11617a465c082a1e82359b3c059f018f8dcbfc93"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/sec51/gf256"
+  packages = ["."]
+  revision = "2454accbeb9e6b0e2e53b01e1d641c7157251ed4"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/sec51/qrcode"
+  packages = [
+    ".",
+    "coding"
+  ]
+  revision = "b7779abbcaf1ec4de65f586a85fe24db31d45e7c"
+
+[[projects]]
+  name = "github.com/sec51/twofactor"
+  packages = ["."]
+  revision = "72a472700bffe1d41817093052ebf4b100e436fa"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
   name = "github.com/serenize/snaker"
   packages = ["."]
   revision = "a683aaf2d516deecd70cad0c72e3ca773ecfcef0"
@@ -348,6 +396,12 @@
     "acme/autocert",
     "bcrypt",
     "blowfish",
+    "curve25519",
+    "hkdf",
+    "nacl/box",
+    "nacl/secretbox",
+    "poly1305",
+    "salsa20/salsa",
     "ssh/terminal"
   ]
   revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
@@ -401,6 +455,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b7d77e34fe15b05f9bcc5fc70f0a0c650f705c6440e7018f3b327de6d2d9ca1f"
+  inputs-digest = "347ad7cc9bc0b8ff20c82cdcdf78540dae0c705d532be4ebfa819f4d035b5ce3"
   solver-name = "gps-cdcl"
   solver-version = 1
