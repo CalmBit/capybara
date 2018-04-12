@@ -70,7 +70,13 @@ func main() {
 	mvc.Configure(app.Party("/otp"), otp)
 	log.Infof("Listening on 8080...")
 
-	app.Run(iris.Addr(":8080"), iris.WithoutStartupLog, iris.WithoutServerError(iris.ErrServerClosed))
+	var run iris.Runner
+	if middleware.GlobalSettings.UseTLS {
+		run = iris.TLS(":8080", middleware.GlobalSettings.TLSCert, middleware.GlobalSettings.TLSKey)
+	} else {
+		run = iris.Addr(":8080")
+	}
+	app.Run(run, iris.WithoutStartupLog, iris.WithoutServerError(iris.ErrServerClosed))
 	log.Infof("Goodbye! :)")
 }
 

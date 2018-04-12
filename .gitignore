@@ -1,4 +1,5 @@
 config/database.yml
+config/config.yml
 vendor/
 migrations/schema.sql
 bin/

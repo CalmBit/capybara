@@ -10,6 +10,9 @@ import (
 type Settings struct {
 	RegistrationsOpen bool `yaml:"registrationsOpen"`
 	URL string `yaml:"url"`
+	UseTLS bool `yaml:"useTLS"`
+	TLSCert string `yaml:"tlsCert"`
+	TLSKey string `yaml:"tlsKey"`
 }
 
 var GlobalSettings Settings
