@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/CalmBit/capybara/models"
 	"github.com/CalmBit/capybara/serializers"
+	"github.com/gobuffalo/pop"
+	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"reflect"
 	_ "time"
-	"github.com/gobuffalo/pop"
-	"github.com/CalmBit/capybara/models"
 )
 
 // temporary
@@ -21,10 +22,15 @@ var APIAccountSerializer = serializers.ConstructSerializer(func(v interface{}) e
 	}
 }).AddFieldAsString("ID").AddField("Username").AddMethod("Acct", "acct").AddField("DisplayName").AddField("Locked").AddField("CreatedAt").AddField("Note").AddField("URL").AddMethod("Avatar", "avatar").AddMethod("AvatarStatic", "avatar_static").AddMethod("Header", "header").AddMethod("HeaderStatic", "header_static").AddField("FollowersCount").AddField("FollowingCount").AddField("StatusesCount")
 
-
 type AccountController struct{}
 
 func (a *AccountController) BeforeActivation(b mvc.BeforeActivation) {
+}
+
+func (a *AccountController) BeginRequest(ctx iris.Context) {
+}
+
+func (a *AccountController) EndRequest(ctx iris.Context) {
 }
 
 func (a *AccountController) GetBy(id int64) mvc.Result {

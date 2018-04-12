@@ -1,0 +1,242 @@
+//colors
+$primary_text_color: hsla(0, 0%, 100%, 1);
+$header_bg_color: hsla(0, 0%, 0%, 0.45);
+$section_bg_color: hsla(0, 0%, 0%, 0.25);
+$page_pg_color: hsla(250, 50%, 20%, 1);
+$untouched_input_bg_color: hsla(0, 0%, 0%, 0.5);
+$invalid_input_bottom_color: hsla(0, 80%, 40%, 1);
+$selected_input_bg_color: hsla(0, 0%, 10%, 0.5);
+$valid_input_bottom_color: hsla(140, 80%, 40%, 1);
+$untouched_input_bottom_color: hsla(250, 80%, 60%, 0.4);
+$submit_button_color: hsla(220, 80%, 40%, 1);
+$login_button_color: hsla(120, 80%, 40%, 1);
+$error_box_bg_color: hsla(0, 70%, 62%, 1);
+$error_box_border_color: hsla(0, 66%, 53%, 1);
+$success_box_bg_color: hsla(135, 70%, 62%, 1);
+$success_box_border_color: hsla(125, 66%, 53%, 1);
+$profile_info_bg_color: hsla(0, 0%, 0%, 0.75);
+$status_bg_color: hsla(0, 100%, 100%, 1);
+
+//fonts
+$primary_font: "Roboto";
+$fallback_font: "sans-serif";
+
+//urls
+$header_img_url: url("/public/img/header/missing.png");
+
+* {
+  font-family: $primary_font, $fallback_font;
+  color: $primary_text_color;
+}
+main {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2.5%;
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1vw;
+  grid-auto-rows: minmax(10%, 15%);
+  header {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    width: 50%;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    background-color: $header_bg_color;
+    padding: 1em;
+    border-radius: 10%;
+  }
+}
+section {
+  background-color: $section_bg_color;
+  padding: 1em;
+  border-radius: 0.5em;
+}
+#overview {
+  grid-column: 1;
+  grid-row: 3;
+}
+#register_about {
+  grid-column: 2;
+  grid-row: 3;
+}
+#login {
+  grid-column: 1/3;
+  grid-row: 2;
+  width: 25%;
+  margin-left: auto;
+  margin-right: auto;
+}
+html {
+  background-color: $page_pg_color;
+  height: 100%;
+}
+h1 {
+  font-size: 4vw;
+}
+h2 {
+  font-size: 2vw;
+}
+p {
+  font-size: 1.25vw;
+}
+#logo {
+  border-radius: 10%;
+  width: 35%;
+  height: 35%;
+}
+input {
+  display: block;
+  font-size: 1.35vw;
+  margin: 1em;
+  padding: 0.25em 0.25em 0.25em 0.25em;
+  border: none;
+  border-bottom: 1px solid $untouched_input_bg_color;
+  border-radius: 0.10em;
+  background-color: $untouched_input_bg_color;
+  transition: 100ms;
+  &:invalid {
+    outline-width: 0;
+    border-bottom: 1px solid $invalid_input_bottom_color;
+    background-color: $selected_input_bg_color;
+    transition: 100ms;
+  }
+  &:valid {
+    outline-width: 0;
+    border-bottom: 1px solid $valid_input_bottom_color;
+    background-color: $selected_input_bg_color;
+    transition: 100ms;
+  }
+  &:placeholder-shown {
+    outline-width: 0;
+    border-bottom: 1px solid $untouched_input_bottom_color;
+    background-color: $selected_input_bg_color;
+    transition: 100ms;
+  }
+}
+button[type="submit"] {
+  border: none;
+  background-color: $submit_button_color;
+  font-size: 1.25vw;
+  margin: 1em;
+  padding: 0.25em 2em 0.25em 2em;
+  border-radius: 0.25em;
+}
+#login_button {
+  border: none;
+  background-color: $login_button_color;
+  font-size: 1.25vw;
+  margin: 1em;
+  padding: 0.25em 2em 0.25em 2em;
+  border-radius: 0.25em;
+  text-decoration: none;
+}
+#error_box {
+  grid-row: 1;
+  grid-column: 1/3;
+  background-color: $error_box_bg_color;
+  padding: 0 1em;
+  border: 4px solid $error_box_border_color;
+  border-radius: 0.25em;
+}
+#success_box {
+  grid-row: 1;
+  grid-column: 1/3;
+  background-color: $success_box_bg_color;
+  padding: 0 1em;
+  border: 4px solid $success_box_border_color;
+  border-radius: 0.25em;
+}
+#error_container {
+  margin-top: 25vh;
+  width: 50vw;
+  margin-left: auto;
+  margin-right: auto;
+  grid-column: 1/3;
+  text-align: center;
+}
+#profile_head {
+  margin-top: 5vh;
+  margin-left: auto;
+  margin-right: auto;
+  grid-column: 1/3;
+  text-align: center;
+  display: grid;
+  line-height: 2vh;
+  background-image: $header_img_url;
+  border-radius: 0.5em 0.5em 0em 0em;
+  padding: 0;
+}
+#profile_header_and_avatar {
+  grid-column: 1;
+  grid-row: 1;
+  border-radius: 0.5em 0 0 0.5em;
+  background-color: transparent;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  width: 50%;
+  margin-left: 37.5%;
+  margin-right: auto;
+}
+#profile_info {
+  grid-column: 2;
+  grid-row: 1;
+  border-radius: 0 0.5em 0 0;
+  padding-right:10%;
+  background-color: $profile_info_bg_color;
+  padding-bottom: 5vh;
+  width: 50%;
+  margin-left: auto;
+  text-align:left;
+}
+#profile_uuid {
+  font-size: 12px;
+}
+#profile_avatar {
+  width: 100%;
+  height: auto;
+}
+#profile_display_name {
+  font-size: 24px;
+}
+#profile {
+  background-color: transparent;
+  margin-left: auto;
+  margin-right: auto;
+  grid-column: 1/3;
+  width:50%;
+}
+#profile_statuses {
+  padding: 0;
+}
+
+
+.status {
+  background-color: $status_bg_color;
+  color: black;
+  padding: 0.1em 1em 0.1em 1em;
+  border-top: 1px solid grey;
+
+  &:last-child {
+    border-radius: 0 0 0.5em 0.5em;
+  }
+  p {
+    color: black;
+    font-size:14px;
+  }
+  img {
+    border-radius:0.25em;
+  }
+}
+
+#status_img {
+  display: inline-block;
+  margin-right:2.5%;
+}
+
+#status_text {
+  display: inline-block;
+  width:87.5%;
+}

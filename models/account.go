@@ -4,11 +4,18 @@ import (
 	"encoding/json"
 	"time"
 
+	"database/sql/driver"
 	"fmt"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"database/sql/driver"
+	"github.com/gobuffalo/uuid"
+	"crypto/rsa"
+	"crypto/rand"
+	"encoding/pem"
+	"crypto/x509"
+	log "github.com/sirupsen/logrus"
+	"github.com/CalmBit/capybara/middleware"
 )
 
 type AccountId struct {
@@ -17,6 +24,7 @@ type AccountId struct {
 
 type Account struct {
 	ID                    int64     `json:"id" db:"id"`
+	UUID				  uuid.UUID `json:"uuid" db:"uuid"`
 	CreatedAt             time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt             time.Time `json:"updated_at" db:"updated_at"`
 	Username              string    `json:"username" db:"username"`
@@ -33,11 +41,11 @@ type Account struct {
 	URL                   string    `json:"url" db:"url"`
 	AvatarFileName        string    `json:"avatar_file_name" db:"avatar_file_name"`
 	AvatarContentType     string    `json:"avatar_content_type" db:"avatar_content_type"`
-	AvatarFileSize        int     `json:"avatar_file_size" db:"avatar_file_size"`
+	AvatarFileSize        int       `json:"avatar_file_size" db:"avatar_file_size"`
 	AvatarUpdatedAt       time.Time `json:"avatar_updated_at" db:"avatar_updated_at"`
 	HeaderFileName        string    `json:"header_file_name" db:"header_file_name"`
 	HeaderContentType     string    `json:"header_content_type" db:"header_content_type"`
-	HeaderFileSize        int     `json:"header_file_size" db:"header_file_size"`
+	HeaderFileSize        int       `json:"header_file_size" db:"header_file_size"`
 	HeaderUpdatedAt       time.Time `json:"header_updated_at" db:"header_updated_at"`
 	AvatarRemoteURL       string    `json:"avatar_remote_url" db:"avatar_remote_url"`
 	SubscriptionExpiresAt time.Time `json:"subscription_expires_at" db:"subscription_expires_at"`
@@ -45,17 +53,17 @@ type Account struct {
 	Suspended             bool      `json:"suspended" db:"suspended"`
 	Locked                bool      `json:"locked" db:"locked"`
 	HeaderRemoteURL       string    `json:"header_remote_url" db:"header_remote_url"`
-	StatusesCount         int     `json:"statuses_count" db:"statuses_count"`
-	FollowersCount        int     `json:"followers_count" db:"followers_count"`
-	FollowingCount        int     `json:"following_count" db:"following_count"`
+	StatusesCount         int       `json:"statuses_count" db:"statuses_count"`
+	FollowersCount        int       `json:"followers_count" db:"followers_count"`
+	FollowingCount        int       `json:"following_count" db:"following_count"`
 	LastWebfingeredAt     time.Time `json:"last_webfingered_at" db:"last_webfingered_at"`
 	InboxURL              string    `json:"inbox_url" db:"inbox_url"`
 	OutboxURL             string    `json:"outbox_url" db:"outbox_url"`
 	SharedInboxURL        string    `json:"shared_inbox_url" db:"shared_inbox_url"`
 	FollowersURL          string    `json:"followers_url" db:"followers_url"`
-	Protocol              int     `json:"protocol" db:"protocol"`
+	Protocol              int       `json:"protocol" db:"protocol"`
 	Memorial              bool      `json:"memorial" db:"memorial"`
-	MovedToAccountID      AccountId     `json:"moved_to_account_id" db:"moved_to_account_id"`
+	MovedToAccountID      AccountId `json:"moved_to_account_id" db:"moved_to_account_id"`
 	FeaturedCollectionURL string    `json:"featured_collection_url" db:"featured_collection_url"`
 }
 
@@ -106,6 +114,16 @@ func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	), nil
 }
 
+func (a *Account) GenerateCryptoKeys() {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		log.Errorf("SEVERE - Trouble generating crypot keys - %s", err.Error())
+		return
+	}
+	a.PrivateKey = string(pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}))
+	a.PublicKey = string(pem.EncodeToMemory(&pem.Block{Type:"RSA PUBLIC KEY", Bytes: x509.MarshalPKCS1PublicKey(&key.PublicKey)}))
+}
+
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
 func (a *Account) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
@@ -119,15 +137,19 @@ func (a *Account) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (a Account) Local() bool {
-	return a.Domain == ""
+	return a.Domain == middleware.GlobalSettings.URL
 }
 
 func (a Account) Acct() string {
 	if a.Local() {
 		return a.Username
 	} else {
-		return fmt.Sprintf("%s@%s", a.Username, a.Domain)
+		return a.FullyQualifiedAcct()
 	}
+}
+
+func (a Account) FullyQualifiedAcct() string {
+	return fmt.Sprintf("%s@%s", a.Username, a.Domain)
 }
 
 func (a Account) Avatar() string {

@@ -1,5 +1,6 @@
 create_table("accounts", func(t) {
 	t.Column("id", "bigint", {"primary": true})
+	t.Column("uuid", "uuid", {})
 	t.Column("username", "string", {"default": "", "null": false})
 	t.Column("domain", "string", {})
 	t.Column("secret", "string", {"default": "", "null": false})
@@ -40,6 +41,7 @@ create_table("accounts", func(t) {
 	t.Column("featured_collection_url", "string", {})
 })
 
+add_index("accounts", "uuid", {"name": "index_accounts_on_uuid"})
 add_index("accounts", "uri", {"name": "index_accounts_on_uri"})
 add_index("accounts", "url", {"name": "index_accounts_on_url"})
 add_index("accounts", ["username", "domain"], {"name": "index_accounts_on_username_and_domain", "unique": true})

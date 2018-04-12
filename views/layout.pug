@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        title Capybara
+    body
+        script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
+        link(rel="stylesheet" type="text/css" href="/public/css/styles.css")
+        link(href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet")
+        main#app
+            if .error
+                div#error_box
+                    p #{.error}
+            if .success
+                div#success_box
+                    p #{.success}
+            {{yield}}

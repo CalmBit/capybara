@@ -1,21 +1,25 @@
 package models
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"time"
-	"net"
-	"database/sql/driver"
-	"fmt"
 	log "github.com/sirupsen/logrus"
+	"net"
+	"time"
+	"github.com/gobuffalo/uuid"
+	"github.com/CalmBit/capybara/middleware"
 )
+
+var namespace uuid.UUID = uuid.NewV5(uuid.Nil, middleware.GlobalSettings.URL)
 
 type UserIP net.IPAddr
 
 type User struct {
-	ID                     int   `json:"id" db:"id"`
+	ID                     int64       `json:"id" db:"id"`
 	Email                  string    `json:"email" db:"email"`
 	CreatedAt              time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
@@ -23,12 +27,12 @@ type User struct {
 	ResetPasswordToken     string    `json:"reset_password_token" db:"reset_password_token"`
 	ResetPasswordSentAt    time.Time `json:"reset_password_sent_at" db:"reset_password_sent_at"`
 	RememberCreatedAt      time.Time `json:"remember_created_at" db:"remember_created_at"`
-	SignInCount            int   `json:"sign_in_count" db:"sign_in_count"`
+	SignInCount            int       `json:"sign_in_count" db:"sign_in_count"`
 	CurrentSignInAt        time.Time `json:"current_sign_in_at" db:"current_sign_in_at"`
 	LastSignInAt           time.Time `json:"last_sign_in_at" db:"last_sign_in_at"`
-	CurrentSignInIp        UserIP `json:"current_sign_in_ip" db:"current_sign_in_ip"`
-	LastSignInIp           UserIP      `json:"last_sign_in_ip" db:"last_sign_in_ip"`
-	Admin                  bool   `json:"admin" db:"admin"`
+	CurrentSignInIp        UserIP    `json:"current_sign_in_ip" db:"current_sign_in_ip"`
+	LastSignInIp           UserIP    `json:"last_sign_in_ip" db:"last_sign_in_ip"`
+	Admin                  bool      `json:"admin" db:"admin"`
 	ConfirmationToken      string    `json:"confirmation_token" db:"confirmation_token"`
 	ConfirmedAt            time.Time `json:"confirmed_at" db:"confirmed_at"`
 	ConfirmationSentAt     time.Time `json:"confirmation_sent_at" db:"confirmation_sent_at"`
@@ -37,60 +41,16 @@ type User struct {
 	EncryptedOtpSecret     string    `json:"encrypted_otp_secret" db:"encrypted_otp_secret"`
 	EncryptedOtpSecretIv   string    `json:"encrypted_otp_secret_iv" db:"encrypted_otp_secret_iv"`
 	EncryptedOtpSecretSalt string    `json:"encrypted_otp_secret_salt" db:"encrypted_otp_secret_salt"`
-	ConsumedTimestep       int   `json:"consumed_timestep" db:"consumed_timestep"`
-	OtpRequiredForLogin    bool   `json:"otp_required_for_login" db:"otp_required_for_login"`
+	ConsumedTimestep       int       `json:"consumed_timestep" db:"consumed_timestep"`
+	OtpRequiredForLogin    bool      `json:"otp_required_for_login" db:"otp_required_for_login"`
 	LastEmailedAt          time.Time `json:"last_emailed_at" db:"last_emailed_at"`
 	OtpBackupCodes         string    `json:"otp_backup_codes" db:"otp_backup_codes"`
 	FilteredLanguages      string    `json:"filtered_languages" db:"filtered_languages"`
-	AccountID              int64    `json:"account_id" db:"account_id" belongs_to:"account"`
-	Disabled               bool   `json:"disabled" db:"disabled"`
-	Moderator              bool   `json:"moderator" db:"moderator"`
-	InviteID               int   `json:"invite_id" db:"invite_id"`
+	AccountID              int64     `json:"account_id" db:"account_id" belongs_to:"account"`
+	Disabled               bool      `json:"disabled" db:"disabled"`
+	Moderator              bool      `json:"moderator" db:"moderator"`
+	InviteID               int       `json:"invite_id" db:"invite_id"`
 	RememberToken          string    `json:"remember_token" db:"remember_token"`
-}
-
-var SampleAccount = Account{
-	ID:                    8675309,
-	CreatedAt:             time.Now(),
-	UpdatedAt:             time.Now(),
-	Username:              "CalmBit",
-	Domain:                "test.notlocal",
-	Secret:                "very secret",
-	PrivateKey:            "private",
-	PublicKey:             "public",
-	RemoteURL:             "remote url thing",
-	SalmonURL:             "salmon url thing",
-	HubURL:                "hub url thing",
-	Note:                  "\u00A7\"hello world\"",
-	DisplayName:           "CalmBit",
-	URI:                   "test.notlocal/CalmBit",
-	URL:                   "test.notlocal/CalmBit",
-	AvatarFileName:        "test.notlocal/CalmBit.png",
-	AvatarContentType:     "image/png",
-	AvatarFileSize:        1337,
-	AvatarUpdatedAt:       time.Now(),
-	HeaderFileName:        "test.notlocal/CalmBit_header.png",
-	HeaderContentType:     "image/gif",
-	HeaderFileSize:        7331,
-	HeaderUpdatedAt:       time.Now(),
-	AvatarRemoteURL:       "test.notlocal/CalmBit.png",
-	SubscriptionExpiresAt: time.Now(),
-	Silenced:              false,
-	Suspended:             false,
-	Locked:                true,
-	HeaderRemoteURL:       "test.notlocal/CalmBit_header.png",
-	StatusesCount:         100,
-	FollowersCount:        200,
-	FollowingCount:        300,
-	LastWebfingeredAt:     time.Now(),
-	InboxURL:              "test.notlocal/CalmBit/inbox",
-	OutboxURL:             "test.notlocal/CalmBit/outbox",
-	SharedInboxURL:        "test.notlocal/inbox",
-	FollowersURL:          "test.notlocal/CalmBit/followers",
-	Protocol:              0,
-	Memorial:              false,
-	MovedToAccountID:      AccountId{0},
-	FeaturedCollectionURL: "test.notlocal/CalmBit/featured",
 }
 
 func NewUser() User {
@@ -106,8 +66,8 @@ func NewUser() User {
 		SignInCount:            0,
 		CurrentSignInAt:        time.Time{},
 		LastSignInAt:           time.Time{},
-		CurrentSignInIp:        UserIP{IP:net.ParseIP("127.0.0.1")},
-		LastSignInIp:           UserIP{IP:net.ParseIP("127.0.0.1")},
+		CurrentSignInIp:        UserIP{IP: net.ParseIP("127.0.0.1")},
+		LastSignInIp:           UserIP{IP: net.ParseIP("127.0.0.1")},
 		Admin:                  false,
 		ConfirmationToken:      "",
 		ConfirmedAt:            time.Time{},
@@ -168,9 +128,10 @@ func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
 
-func (u *User) CreateAccount(tx *pop.Connection, username string) error {
+func (u *User) CreateAccount(tx *pop.Connection, username string) (*Account, error) {
 	var account = Account{
 		ID:                    0,
+		UUID:				   uuid.NewV3(namespace, username),
 		CreatedAt:             time.Time{},
 		UpdatedAt:             time.Time{},
 		Username:              "",
@@ -213,15 +174,20 @@ func (u *User) CreateAccount(tx *pop.Connection, username string) error {
 		FeaturedCollectionURL: "",
 	}
 	account.Username = username
+	account.GenerateCryptoKeys()
+	account.DisplayName = username
+	account.Domain = middleware.GlobalSettings.URL
+	account.URL = middleware.GlobalSettings.URL + "/" + account.UUID.String()
+
 	valid, err := tx.ValidateAndCreate(&account)
 	if valid.HasAny() {
-		return fmt.Errorf("%s", valid.Error())
+		return nil, fmt.Errorf("%s", valid.Error())
 	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 	u.AccountID = account.ID
-	return nil
+	return &account, nil
 }
 
 func (ip UserIP) Value() (driver.Value, error) {

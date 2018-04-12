@@ -4,3 +4,4 @@ migrations/schema.sql
 bin/
 .idea/
 keys/
+node_modules/

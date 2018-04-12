@@ -1,0 +1,20 @@
+section#profile
+    section#profile_head
+        section#profile_header_and_avatar
+            img#profile_avatar(src="/public/img/avatar/missing.png" height="128" style="border-radius:1em;")
+        section#profile_info
+            p#profile_display_name #{.account.DisplayName}
+            p #{.account.FullyQualifiedAcct}
+            p#profile_uuid  (#{.account.UUID.String})
+            p#profile_note #{.account.Note}
+    section#profile_statuses
+        {{range .statuses}}
+            div.status
+                {{.Avatar}}
+                div#status_text
+                    p
+                        span(style="font-weight:bold;color:black;margin-right:0.5em;") #{.StatusAccount.DisplayName}
+                        span(style="color:grey;margin-right:1em;") @#{.StatusAccount.Username}
+                        span(style="color:grey;float:right;") #{.TimeAgo}
+                    p #{.Text}
+        {{end}}

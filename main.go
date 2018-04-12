@@ -7,6 +7,7 @@ import (
 	"github.com/x-cray/logrus-prefixed-formatter"
 
 	"github.com/CalmBit/capybara/controllers"
+	"github.com/CalmBit/capybara/middleware"
 	"github.com/gobuffalo/pop"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -17,14 +18,13 @@ import (
 const capybaraVersionString = "v0.1.0"
 
 func main() {
-
 	log.SetOutput(os.Stderr)
 	textFormatter := new(prefixed.TextFormatter)
 	textFormatter.FullTimestamp = true
 	textFormatter.TimestampFormat = "Jan 01 2006 15:04:05"
 	log.SetFormatter(textFormatter)
 	log.SetLevel(log.DebugLevel)
-	controllers.LoadSettings()
+	middleware.LoadSettings()
 	log.Infof("Capybara %s is starting up...", capybaraVersionString)
 	log.Debugf("Establishing connection to database...")
 	tx, err := pop.Connect("development")
@@ -51,27 +51,31 @@ func main() {
 
 	log.Debugf("Starting up Iris....")
 	app := iris.New()
+	middleware.SetupSessionBackend(cache)
+	app.Use(middleware.InitializeSession)
+	app.Use(middleware.InitializeSettings)
 	app.StaticWeb("/public/", "./public")
-	pugEngine := iris.Pug("./views", ".pug")
+	app.OnErrorCode(404, func(ctx iris.Context) {
+		ctx.View("404.pug")
+	})
+	pugEngine := iris.Pug("./views", ".pug").Layout("layout.pug")
 	pugEngine.Reload(true)
 	app.RegisterView(pugEngine)
-	controllers.Session.UseDatabase(cache)
-	app.Get("/", func(ctx iris.Context) {
-		s := controllers.Session.Start(ctx)
-		if s.Get("user_id") == nil {
-			ctx.Redirect("/about")
-		}
-	})
+	mvc.Configure(app.Party("/"), public)
 	mvc.Configure(app.Party("/api/v1/accounts"), accounts)
 	mvc.Configure(app.Party("/register"), registrations)
 	mvc.Configure(app.Party("/login"), logins)
+	mvc.Configure(app.Party("/logout"), logouts)
 	mvc.Configure(app.Party("/about"), about)
 	mvc.Configure(app.Party("/otp"), otp)
 	log.Infof("Listening on 8080...")
 
-
 	app.Run(iris.Addr(":8080"), iris.WithoutStartupLog, iris.WithoutServerError(iris.ErrServerClosed))
 	log.Infof("Goodbye! :)")
+}
+
+func public(app *mvc.Application) {
+	app.Handle(new(controllers.PublicController))
 }
 
 func accounts(app *mvc.Application) {
@@ -84,6 +88,10 @@ func registrations(app *mvc.Application) {
 
 func logins(app *mvc.Application) {
 	app.Handle(new(controllers.LoginController))
+}
+
+func logouts(app *mvc.Application) {
+	app.Handle(new(controllers.LogoutController))
 }
 
 func about(app *mvc.Application) {

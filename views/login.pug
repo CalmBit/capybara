@@ -1,18 +1,6 @@
-doctype html
-html(lang="en")
-    head
-        meta(charset="utf-8")
-        title Capybara
-    body
-        script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
-        link(rel="stylesheet" type="text/css" href="/public/css/style.css")
-        main#app
-            if .error
-                div#error_box
-                    p #{.error}
-            section#login
-                h2 Log In
-                form(action="/login" method="post")
-                    input(type="email" name="email" placeholder="Email address")
-                    input(type="password" name="password" placeholder="Password")
-                    button(type="submit") Log In
+section#login
+    h2 Log In
+    form(action="/login" method="post")
+        input(type="email" name="email" placeholder="Email address")
+        input(type="password" name="password" placeholder="Password")
+        button(type="submit") Log In

@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"github.com/CalmBit/capybara/middleware"
+	"github.com/CalmBit/capybara/models"
+	"github.com/gobuffalo/pop"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/CalmBit/capybara/models"
 	"golang.org/x/crypto/bcrypt"
-	"encoding/json"
-	"github.com/gobuffalo/pop"
+	"fmt"
 )
 
 type RegistrationController struct{}
@@ -14,8 +15,14 @@ type RegistrationController struct{}
 func (a *RegistrationController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
+func (a *RegistrationController) BeginRequest(ctx iris.Context) {
+}
+
+func (a *RegistrationController) EndRequest(ctx iris.Context) {
+}
+
 func (a *RegistrationController) Post(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
+	s := middleware.GetSession(ctx)
 	if ctx.FormValue("password") == ctx.FormValue("password_confirm") {
 		passhash, err := bcrypt.GenerateFromPassword([]byte(ctx.FormValue("password")), 14)
 		if err != nil {
@@ -34,7 +41,7 @@ func (a *RegistrationController) Post(ctx iris.Context) mvc.Result {
 				Path: "/about",
 			}
 		}
-		err = newUser.CreateAccount(tx, ctx.FormValue("username"))
+		acct, err := newUser.CreateAccount(tx, ctx.FormValue("username"))
 		if err != nil {
 			s.SetFlash("error", err.Error())
 			return mvc.Response{
@@ -53,16 +60,9 @@ func (a *RegistrationController) Post(ctx iris.Context) mvc.Result {
 				Path: "/about",
 			}
 		}
-		buf, err := json.Marshal(newUser)
-		if err != nil {
-			s.SetFlash("error", err.Error())
-			return mvc.Response{
-				Path: "/about",
-			}
-		}
+
 		return mvc.Response{
-			ContentType: "application/json",
-			Content:     buf,
+			Path: fmt.Sprintf("/%s", acct.UUID.String()),
 		}
 	}
 

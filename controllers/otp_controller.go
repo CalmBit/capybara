@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	"github.com/sec51/twofactor"
-	"github.com/kataras/iris/mvc"
-	"github.com/kataras/iris"
-	"fmt"
 	"crypto"
 	"encoding/base64"
-	"github.com/gobuffalo/pop"
+	"fmt"
+	"github.com/CalmBit/capybara/middleware"
 	"github.com/CalmBit/capybara/models"
+	"github.com/gobuffalo/pop"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"github.com/sec51/twofactor"
 )
 
 type OTPController struct{}
@@ -17,17 +18,14 @@ func (o *OTPController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (o *OTPController) BeginRequest(ctx iris.Context) {
-	s := Session.Start(ctx)
-	ctx.ViewData("error", s.GetFlashString("error"))
-	ctx.ViewData("settings", GlobalSettings)
 }
 
 func (o *OTPController) EndRequest(ctx iris.Context) {
 }
 
-func (o *OTPController) Get(ctx iris.Context) {
-	s := Session.Start(ctx)
-	if s.Get("user_id") == nil {
+func (o *OTPController) GetSettings(ctx iris.Context) {
+	s := middleware.GetSession(ctx)
+	if s.Get("authenticated") == nil {
 		s.SetFlash("error", "You need to be logged in to do that.")
 		ctx.Redirect("/login")
 	} else {
@@ -53,7 +51,12 @@ func (o *OTPController) Get(ctx iris.Context) {
 }
 
 func (o *OTPController) GetLogin(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
+	s := middleware.GetSession(ctx)
+	if s.Get("authenticated") != nil {
+		return mvc.Response{
+			Path: "/",
+		}
+	}
 	if !s.GetBooleanDefault("pass_confirmed", false) {
 		s.SetFlash("error", "An error occurred. Please try again.")
 		return mvc.Response{
@@ -67,24 +70,24 @@ func (o *OTPController) GetLogin(ctx iris.Context) mvc.Result {
 }
 
 func (o *OTPController) Post(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
+	s := middleware.GetSession(ctx)
 	otp := s.GetFlash("otp").(*twofactor.Totp)
 	err := otp.Validate(ctx.FormValue("code_confirm"))
 	if err != nil {
 		s.SetFlash("error", "There was a problem processing the confirmation code")
 		return mvc.Response{
-			Path: "/otp",
+			Path: "/otp/settings",
 		}
 	}
 	tx, err := pop.Connect("development")
 	if err != nil {
 		s.SetFlash("error", "The code was confirmed, but we had trouble storing it. Please try again.")
 		return mvc.Response{
-			Path: "/otp",
+			Path: "/otp/settings",
 		}
 	}
 	var user models.User
-	id, err := s.GetInt("user_id")
+	id, err := s.GetInt64("user_id")
 	if err != nil {
 		s.SetFlash("error", "You need to be logged in to do that.")
 		return mvc.Response{
@@ -96,7 +99,7 @@ func (o *OTPController) Post(ctx iris.Context) mvc.Result {
 	if err != nil {
 		s.SetFlash("error", "Unable to serialize secret? (this is bad)")
 		return mvc.Response{
-			Path: "/otp",
+			Path: "/otp/settings",
 		}
 	}
 	bufencode := make([]byte, ((len(buf)+2)/3)*4)
@@ -107,16 +110,15 @@ func (o *OTPController) Post(ctx iris.Context) mvc.Result {
 	if valid.HasAny() {
 		s.SetFlash("error", valid.Error())
 		return mvc.Response{
-			Path: "/otp",
+			Path: "/otp/settings",
 		}
 	} else if err != nil {
 		s.SetFlash("error", err.Error())
 		return mvc.Response{
-			Path: "/otp",
+			Path: "/otp/settings",
 		}
 	}
 	s.SetFlash("error", "Success!")
-	ctx.Redirect("/about")
 	return mvc.Response{
 		Path: "/about",
 	}

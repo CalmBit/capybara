@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "gulp": "gulp"
+  },
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^4.0.1"
+  }
+}

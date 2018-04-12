@@ -1,15 +1,16 @@
 package controllers
 
 import (
+	"encoding/base64"
+	"fmt"
+	"github.com/CalmBit/capybara/middleware"
+	"github.com/CalmBit/capybara/models"
+	"github.com/gobuffalo/pop"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"github.com/CalmBit/capybara/models"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/gobuffalo/pop"
-	"fmt"
-	"html"
 	"github.com/sec51/twofactor"
-	"encoding/base64"
+	"golang.org/x/crypto/bcrypt"
+	"html"
 )
 
 type LoginController struct{}
@@ -18,17 +19,14 @@ func (l *LoginController) BeforeActivation(b mvc.BeforeActivation) {
 }
 
 func (l *LoginController) BeginRequest(ctx iris.Context) {
-	s := Session.Start(ctx)
-	ctx.ViewData("error", s.GetFlashString("error"))
-	ctx.ViewData("settings", GlobalSettings)
 }
 
 func (l *LoginController) EndRequest(ctx iris.Context) {
 }
 
 func (l *LoginController) Get(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
-	if s.Get("user_id") != nil {
+	s := middleware.GetSession(ctx)
+	if s.Get("authenticated") != nil {
 		return mvc.Response{
 			Path: "/",
 		}
@@ -39,7 +37,7 @@ func (l *LoginController) Get(ctx iris.Context) mvc.Result {
 }
 
 func (l *LoginController) Post(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
+	s := middleware.GetSession(ctx)
 	email := html.EscapeString(ctx.FormValue("email"))
 
 	tx, err := pop.Connect("development")
@@ -87,6 +85,7 @@ func (l *LoginController) Post(ctx iris.Context) mvc.Result {
 		s.Set("username", acct.Username)
 		s.Set("email", user.Email)
 		s.Set("display_name", acct.DisplayName)
+		s.Set("authenticated", true)
 		return mvc.Response{
 			Path: "/",
 		}
@@ -94,7 +93,7 @@ func (l *LoginController) Post(ctx iris.Context) mvc.Result {
 }
 
 func (l *LoginController) PostConfirm(ctx iris.Context) mvc.Result {
-	s := Session.Start(ctx)
+	s := middleware.GetSession(ctx)
 
 	if !s.GetBooleanDefault("pass_confirmed", false) {
 		s.SetFlash("error", "An error occurred. Please try again.")
@@ -102,7 +101,7 @@ func (l *LoginController) PostConfirm(ctx iris.Context) mvc.Result {
 			Path: "/login",
 		}
 	}
-	id, err := s.GetInt("user_id")
+	id, err := s.GetInt64("user_id")
 	if err != nil {
 		s.SetFlash("error", err.Error())
 		s.Delete("pass_confirmed")
@@ -155,6 +154,7 @@ func (l *LoginController) PostConfirm(ctx iris.Context) mvc.Result {
 	s.Set("username", acct.Username)
 	s.Set("email", user.Email)
 	s.Set("display_name", acct.DisplayName)
+	s.Set("authenticated", true)
 	return mvc.Response{
 		Path: "/",
 	}
