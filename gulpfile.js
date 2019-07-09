@@ -7,5 +7,5 @@ gulp.task('sass', function() {
     .pipe(gulp.dest("public/css"));
 });
 
-gulp.task('default', ['sass']);
+gulp.task('default', gulp.series('sass'));
 

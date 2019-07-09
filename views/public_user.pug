@@ -8,13 +8,13 @@ section#profile
             p#profile_uuid  (#{.account.UUID.String})
             p#profile_note #{.account.Note}
     section#profile_statuses
-        {{range .statuses}}
+        | {{range .statuses}}
             div.status
-                {{.Avatar}}
+                | {{.Avatar}}
                 div#status_text
                     p
                         span(style="font-weight:bold;color:black;margin-right:0.5em;") #{.StatusAccount.DisplayName}
                         span(style="color:grey;margin-right:1em;") @#{.StatusAccount.Username}
                         span(style="color:grey;float:right;") #{.TimeAgo}
                     p #{.Text}
-        {{end}}
+        | {{end}}

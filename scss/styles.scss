@@ -24,219 +24,110 @@ $fallback_font: "sans-serif";
 //urls
 $header_img_url: url("/public/img/header/missing.png");
 
+$section-padding: 0.5em;
+
 * {
   font-family: $primary_font, $fallback_font;
   color: $primary_text_color;
 }
-main {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 2.5%;
-  width: 90%;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-gap: 1vw;
-  grid-auto-rows: minmax(10%, 15%);
-  header {
-    grid-column: 1 / 3;
-    grid-row: 2;
-    width: 50%;
-    margin-right: auto;
-    margin-left: auto;
-    text-align: center;
-    background-color: $header_bg_color;
-    padding: 1em;
-    border-radius: 10%;
-  }
-}
-section {
-  background-color: $section_bg_color;
-  padding: 1em;
-  border-radius: 0.5em;
-}
-#overview {
-  grid-column: 1;
-  grid-row: 3;
-}
-#register_about {
-  grid-column: 2;
-  grid-row: 3;
-}
-#login {
-  grid-column: 1/3;
-  grid-row: 2;
-  width: 25%;
-  margin-left: auto;
-  margin-right: auto;
-}
+
 html {
-  background-color: $page_pg_color;
-  height: 100%;
+  background: #222;
+  margin: 1em 1em 1em 1em;
 }
-h1 {
-  font-size: 4vw;
-}
-h2 {
-  font-size: 2vw;
-}
-p {
-  font-size: 1.25vw;
-}
+
 #logo {
-  border-radius: 10%;
-  width: 35%;
-  height: 35%;
+  width: 10em;
+  height: 10em;
 }
+
+#app {
+  display: grid;
+  grid-row-gap: 1em;
+  grid-column-gap: 1em;
+  grid-template-columns: 50vw;
+}
+
+header {
+  grid-row: 1;
+  grid-column: 1 / span 2;
+  text-align: center;
+  background-color: #0001;
+  padding: $section-padding;
+  border-radius: 1em;
+}
+
+section {
+  background-color: #0001;
+  padding: $section-padding;
+  border-radius: 1em;
+}
+
+#overview {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+#register_about {
+  grid-row: 2;
+  grid-column: 2;
+  text-align: center;
+}
+
+@mixin flash {
+  grid-row: -2;
+  grid-column: 1 / span 2;
+  text-align: center;
+  border-radius: 0.25em;
+}
+
+#error_box {
+  @include flash();
+  background-color: #F004;
+  border: 4px solid #4004;
+}
+
+#success_box {
+  @include flash();
+  background-color: #0F04;
+  border: 4px solid #0F04;
+}
+
+#login {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  text-align: center;
+  margin-left: 25vw;
+  margin-right: 25vw;
+}
+
 input {
   display: block;
-  font-size: 1.35vw;
-  margin: 1em;
-  padding: 0.25em 0.25em 0.25em 0.25em;
-  border: none;
-  border-bottom: 1px solid $untouched_input_bg_color;
-  border-radius: 0.10em;
-  background-color: $untouched_input_bg_color;
-  transition: 100ms;
-  &:invalid {
-    outline-width: 0;
-    border-bottom: 1px solid $invalid_input_bottom_color;
-    background-color: $selected_input_bg_color;
-    transition: 100ms;
-  }
-  &:valid {
-    outline-width: 0;
-    border-bottom: 1px solid $valid_input_bottom_color;
-    background-color: $selected_input_bg_color;
-    transition: 100ms;
-  }
-  &:placeholder-shown {
-    outline-width: 0;
-    border-bottom: 1px solid $untouched_input_bottom_color;
-    background-color: $selected_input_bg_color;
-    transition: 100ms;
-  }
+  width: 32em;
+  height: 2em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: #0002;
+  color: #FFF;
+  font-weight: bold;
 }
-button[type="submit"] {
+
+@mixin button {
   border: none;
-  background-color: $submit_button_color;
-  font-size: 1.25vw;
-  margin: 1em;
-  padding: 0.25em 2em 0.25em 2em;
   border-radius: 0.25em;
-}
-#login_button {
-  border: none;
-  background-color: $login_button_color;
-  font-size: 1.25vw;
-  margin: 1em;
-  padding: 0.25em 2em 0.25em 2em;
-  border-radius: 0.25em;
+  font-size: 1.05em;
   text-decoration: none;
-}
-#error_box {
-  grid-row: 1;
-  grid-column: 1/3;
-  background-color: $error_box_bg_color;
-  padding: 0 1em;
-  border: 4px solid $error_box_border_color;
-  border-radius: 0.25em;
-}
-#success_box {
-  grid-row: 1;
-  grid-column: 1/3;
-  background-color: $success_box_bg_color;
-  padding: 0 1em;
-  border: 4px solid $success_box_border_color;
-  border-radius: 0.25em;
-}
-#error_container {
-  margin-top: 25vh;
-  width: 50vw;
-  margin-left: auto;
-  margin-right: auto;
-  grid-column: 1/3;
-  text-align: center;
-}
-#profile_head {
-  margin-top: 5vh;
-  margin-left: auto;
-  margin-right: auto;
-  grid-column: 1/3;
-  text-align: center;
-  display: grid;
-  line-height: 2vh;
-  background-image: $header_img_url;
-  border-radius: 0.5em 0.5em 0em 0em;
-  padding: 0;
-}
-#profile_header_and_avatar {
-  grid-column: 1;
-  grid-row: 1;
-  border-radius: 0.5em 0 0 0.5em;
-  background-color: transparent;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
-  width: 50%;
-  margin-left: 37.5%;
-  margin-right: auto;
-}
-#profile_info {
-  grid-column: 2;
-  grid-row: 1;
-  border-radius: 0 0.5em 0 0;
-  padding-right:10%;
-  background-color: $profile_info_bg_color;
-  padding-bottom: 5vh;
-  width: 50%;
-  margin-left: auto;
-  text-align:left;
-}
-#profile_uuid {
-  font-size: 12px;
-}
-#profile_avatar {
-  width: 100%;
-  height: auto;
-}
-#profile_display_name {
-  font-size: 24px;
-}
-#profile {
-  background-color: transparent;
-  margin-left: auto;
-  margin-right: auto;
-  grid-column: 1/3;
-  width:50%;
-}
-#profile_statuses {
-  padding: 0;
+  padding: 0.5em;
 }
 
-
-.status {
-  background-color: $status_bg_color;
-  color: black;
-  padding: 0.1em 1em 0.1em 1em;
-  border-top: 1px solid grey;
-
-  &:last-child {
-    border-radius: 0 0 0.5em 0.5em;
-  }
-  p {
-    color: black;
-    font-size:14px;
-  }
-  img {
-    border-radius:0.25em;
-  }
+button {
+  @include button();
+  background-color: $submit_button_color;
 }
 
-#status_img {
-  display: inline-block;
-  margin-right:2.5%;
-}
-
-#status_text {
-  display: inline-block;
-  width:87.5%;
+a#login_button {
+  @include button();
+  background-color: $login_button_color;
 }

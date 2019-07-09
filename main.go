@@ -4,7 +4,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/x-cray/logrus-prefixed-formatter"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 
 	"github.com/CalmBit/capybara/controllers"
 	"github.com/CalmBit/capybara/middleware"
@@ -44,6 +44,10 @@ func main() {
 		IdleTimeout: service.DefaultRedisIdleTimeout,
 		Prefix:      "",
 	})
+	if cache == nil {
+		log.Fatalf("Unable to establish redis connection!")
+		return
+	}
 	iris.RegisterOnInterrupt(func() {
 		cache.Close()
 		tx.Close()

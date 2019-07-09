@@ -10,11 +10,11 @@ go faster.
 
 ## How?
 All of the code will be designed independently of Mastodon, but the underlying schema and interface (including the
-database layout and API route) will be, for compatability and cleanliness purposes, identical to the best of my ability.
+database layout and API route) will be, for compatibility and cleanliness purposes, identical to the best of my ability.
 
 ## Development/Deployment
 Currently, this project is just barely getting started, so
-I have no advice or reccomendations aside from "this isn't
+I have no advice or recommendations aside from "this isn't
 even close to working."
 
 ## License
@@ -24,7 +24,7 @@ the beautiful people working on Mastodon - this is just a tribute.
 
 ---
 ### Capybara
-Copyight (C) 2018 Ethan Brooks.
+Copyight (C) 2018 CalmBit.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General 
 Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) 

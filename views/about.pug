@@ -6,12 +6,19 @@ section#overview
     p
         | Capybara is an #[a(href="https://github.com/CalmBit/capybara") open source],
         |  decentralized, federated microblogging platform - like Twitter, but with no one company
-        | controlling it.
+        |  controlling it.
+    h2
+        | Why would I want this?
+    p
+        | Microblogging is a great way to connect with people all over the world - unfortunately,
+        |  the modern microblogging landscape is controlled by one company, with very few people's
+        |  interests at heart. Software like Capybara allows users to take back their data and
+        |  find communities that interest and benefit them, rather than a corporation.
     h2
         | This sounds like #[a(href="https://mastodon.social/about") Mastodon]...
     p
         | You're correct in making that comparison! Capybara is a clone of Mastodon, written in Go rather
-        | than Ruby, and with Vue.JS rather than React.
+        |  than Ruby, and with Vue.JS rather than React.
 section#register_about
     if .username
         h1 You're logged in as #{.username}
@@ -26,8 +33,7 @@ section#register_about
                 input(type="password" name="password" placeholder="Password")
                 input(type="password" name="password_confirm" placeholder="Confirm password")
                 button(type="submit") Sign Up
-            hr
-            br
+            p or
             a#login_button(href="/login") Log In
         else
             h2 Sorry!
