@@ -1,7 +1,7 @@
 <img src="capybara.svg" width="128px" height="128px" align="right">
 
 # Capybara
-Capybara is a [Mastodon](https://github.com/tootsuite/mastodon) clone - it will function practically indentically to
+Capybara is a [Mastodon](https://github.com/tootsuite/mastodon) clone - it will function practically identically to
 Mastodon, both under the hood and through its exposed APIs.
 
 ## Why?
