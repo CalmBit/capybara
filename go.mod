@@ -13,7 +13,7 @@ require (
 	github.com/gobuffalo/fizz v1.9.2 // indirect
 	github.com/gobuffalo/makr v1.2.0 // indirect
 	github.com/gobuffalo/nulls v0.1.0 // indirect
-	github.com/gobuffalo/pop v4.11.2+incompatible
+	github.com/gobuffalo/pop v4.12.0+incompatible
 	github.com/gobuffalo/uuid v2.0.5+incompatible
 	github.com/gobuffalo/validate v2.0.3+incompatible
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
