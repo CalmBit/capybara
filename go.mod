@@ -15,7 +15,7 @@ require (
 	github.com/gobuffalo/nulls v0.1.0 // indirect
 	github.com/gobuffalo/pop v4.11.2+incompatible
 	github.com/gobuffalo/uuid v2.0.5+incompatible
-	github.com/gobuffalo/validate v2.0.3+incompatible
+	github.com/gobuffalo/validate v2.0.4+incompatible
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect
 	github.com/iris-contrib/formBinder v0.0.0-20190104093907-fbd5963f41e1 // indirect
